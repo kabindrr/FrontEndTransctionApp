@@ -10,15 +10,15 @@ const Login = () => {
       label: "Email",
       name: "email",
       type: "email",
-      Placeholder: "Enter Email",
+      placeholder: "Enter Your Email",
       required: true,
     },
 
     {
       label: "Password",
-      name: "Password",
-      type: "Password",
-      Placeholder: "Enter Password",
+      name: "password",
+      type: "password",
+      placeholder: "Enter Password",
       required: true,
     },
   ];

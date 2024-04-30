@@ -1,19 +1,21 @@
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import { Footer } from "../Footer";
 import { TopNav } from "../TopNav";
 import { CustomInput } from "../CustomInput";
 import { useState } from "react";
+import { postNewUser } from "../../helpers/axiosHelper";
 
 const initialState = {
   name: "",
   email: "",
-  phone: null,
+  phone: "",
   password: "",
   confirmPassword: "",
 };
 
 const Signup = () => {
   const [form, setForm] = useState(initialState);
+  const [resp, setResp] = useState({});
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -24,46 +26,67 @@ const Signup = () => {
     });
   };
 
-  const handleOnSubmit = (e) => {
+  const handleOnSubmit = async (e) => {
     e.preventDefault();
+
+    const { confirmPassword, ...rest } = form;
+
+    if (confirmPassword !== rest.password) {
+      return alert("passport do not match, password must Match");
+    }
+
+    //call axios to send data to api
+    const data = await postNewUser(rest);
+    setResp(data);
+
+    console.log(data);
+
+    data.status === "success" && setForm;
   };
 
   const inputes = [
     {
       label: "First Name",
-      name: "Name",
-      type: "Text",
-      Placeholder: "First Name",
+      name: "name",
+      type: "text",
+      placeholder: "First Name",
       required: true,
+      value: form.name,
     },
-    {
-      label: "Last Name",
-      name: "Name",
-      type: "Text",
-      Placeholder: "Last Name",
-      required: true,
-    },
+
     {
       label: "Email",
-      name: "Email",
-      type: "Email",
-      Placeholder: "Enter Your Email",
+      name: "email",
+      type: "email",
+      placeholder: "Enter Your Email",
       required: true,
+      value: form.email,
+    },
+
+    {
+      label: "Phone",
+      name: "phone",
+      type: "number",
+      placeholder: "Enter Your Number",
+      required: true,
+      value: form.phone,
     },
     {
       label: "Password",
-      name: "Password",
-      type: "Password",
-      Placeholder: "Enter Password",
+      name: "password",
+      type: "password",
+      placeholder: "Enter Password",
       required: true,
+      value: form.password,
     },
 
     {
       label: "Confirm Password",
-      name: "Password",
+      name: "confirmPassword",
       type: "Password",
-      Placeholder: "Confirm Password",
+      placeholder: "Confirm Password",
       required: true,
+      value: form.confirmPassword,
     },
   ];
   return (
@@ -90,7 +113,16 @@ const Signup = () => {
           >
             <div className="shadow-lg p-5 rounded border w-75 mt-5 mb-5">
               <h2>Sign Up Now</h2>
+
               <hr />
+              {resp?.message && (
+                <Alert
+                  variant={resp?.status === "success" ? "success" : "danger"}
+                >
+                  {resp.message}
+                </Alert>
+              )}
+
               <Form onSubmit={handleOnSubmit}>
                 {inputes.map((item, i) => (
                   <CustomInput key={i} {...item} onChange={handleOnChange} />
